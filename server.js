@@ -41,6 +41,12 @@ app.get('/get/short/question',async(req,res)=>{
     const response=await Short.find();
     res.json(response)
 })
+app.get('/get/short/question/:id',async(req,res)=>{
+    const id=req.params.id;
+
+    const response=await Short.findOne({id:id});
+    res.json(response)
+})
 app.listen(4000,()=>{
     console.log("server started")
 })
