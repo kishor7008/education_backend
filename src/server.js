@@ -2,13 +2,13 @@ const express = require("express");
 const app = express();
 const cors = require("cors")
 const bcrypt = require("bcryptjs")
-const config = require('./config/config')
-const Mcq = require('./models/mcaSchema')
-const Short = require("./models/shortSchema")
-const Vshort = require("./models/vshortSchema")
-const Longq = require("./models/longSchema")
-const Chapter = require("./models/chapterSchema")
-const User=require('./models/userSchema')
+const config = require('../config/config')
+const Mcq = require('../models/mcaSchema')
+const Short = require("../models/shortSchema")
+const Vshort = require("../models/vshortSchema")
+const Longq = require("../models/longSchema")
+const Chapter = require("../models/chapterSchema")
+const User=require('../models/userSchema')
 app.use(cors());
 app.use(express.json())
 config()
@@ -93,20 +93,70 @@ app.get("/shortdata", async (req, res) => {
 //     console.log(response)
 // })
 
-app.get("/:subject/:chapter/:question/:id", async (req, res) => {
-    const id = req.params.id
-    const subject = req.params.subject
-    const chapter = req.params.chapter
-    const question=req.params.question
-console.log(question)
-    const response = await Chapter.findOne({ 'sub': `${subject}`, chapter }).populate(`${question}`)
+// app.get("/:subject/:chapter/:question/:id", async (req, res) => {
+//     const id = req.params.id
+//     const subject = req.params.subject
+//     const chapter = req.params.chapter
+//     const question=req.params.question
+// console.log(question)
+//     const response = await Chapter.findOne({ 'sub': `${subject}`, chapter }).populate(`${question}`)
 
-    res.json(response[`${question}`][`${question}`][id])
-    console.log(response[`${question}`][`${question}`][id])
+//     res.json(response[`${question}`][`${question}`][id])
+//     console.log(response[`${question}`][`${question}`][id])
+// })
+
+app.get("/:subject/:chapter/:question/:id", async (req, res)=>{
+    const id = req.params.id
+        const subject = req.params.subject
+        const chapter = req.params.chapter
+        const question=req.params.question
+    console.log(question)
+        const response = await Chapter.findOne({ 'sub': `${subject}`, chapter }).populate(`${question}`)
+        let arr=response[`${question}`][`${question}`]
+        
+        if(id==1){
+            let set1=arr.slice(0,20)
+            res.json(set1)
+            return;
+        }else if(id==2){
+            let set2=arr.slice(20,40)
+            res.json(set2)
+            return;
+        }else if(id==3){
+            let set3=arr.slice(40,60)
+            res.json(set3)
+            return;
+        }else if(id==4){
+            let set4=arr.slice(60,80)
+            res.json(set4)
+            return;
+        }else if(id==5){
+            let set5=arr.slice(80,100)
+            res.json(set5)
+            return;
+        }else{
+
+        }
+
+    
+        // console.log(response.longq)
 })
 
 
+app.put("/update/:subject/:chapter/:question/:id",async(req,res)=>{
+    const id = req.params.id
+        const subject = req.params.subject
+        const chapter = req.params.chapter
+        const question=req.params.question
+    console.log(question)
+        const response = await Chapter.findOne({ 'sub': `${subject}`, chapter })
+        let obj=response.longq;
+        
+       let r= await Longq.updateOne({"id":obj},{$set:{longq:`${req.body.kk}`}})
 
+        res.json(r)
+    
+})
 
 
 
@@ -148,6 +198,26 @@ console.log(userExist)
         }
     
 })
+
+
+
+
+
+const userdata=require('../dataUser');
+const { updateOne } = require("../models/chapterSchema");
+app.post('/userregister',async(req,res)=>{
+    req.body=userdata;
+    const response= new User(req.body);
+    await response.save();
+    res.json(response)
+})
+
+
+
+
+
+
+
 
 
 
